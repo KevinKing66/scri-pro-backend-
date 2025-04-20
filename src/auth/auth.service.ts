@@ -9,10 +9,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User } from 'src/users/entities/user.entity';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
+  constructor(
+    @InjectModel('User') private readonly userModel: Model<User>,
+    private readonly jwtService: JwtService, // Ensure JwtService is properly injected and typed
+  ) {}
 
   async create(createUserDto: RegisterDto) {
     const existingUser = await this.userModel.findOne({
@@ -51,5 +55,27 @@ export class AuthService {
 
     const res = { ...user.toObject(), password: undefined }; // Exclude password from the returned object
     return res;
+  }
+  async login(
+    loginDto: LoginDto,
+  ): Promise<{ access_token: string; user: any }> {
+    if (!this.jwtService) {
+      throw new UnauthorizedException('JWT service is not available');
+    }
+    // Validar las credenciales del usuario
+    const user = await this.validateUser(loginDto);
+
+    // Crear el payload para el token JWT
+    const payload = { email: user.email, sub: user._id };
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    const access_token = (this.jwtService as JwtService).sign(payload, {
+      expiresIn: '72h',
+    });
+    // Retornar el token y todos los datos del usuario
+    return {
+      access_token, // Safely access and handle potential undefined
+      user, // Retorna los datos completos del usuario
+    };
   }
 }
