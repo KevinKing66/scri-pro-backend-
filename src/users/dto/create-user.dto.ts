@@ -9,5 +9,5 @@ export class CreateUserDto {
   status: 'ACTIVE' | 'INACTIVE';
   docNum: string;
   docType: string;
-  phone: string;
+  phone?: string;
 }
