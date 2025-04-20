@@ -34,7 +34,6 @@ export class AuthService {
   async validateUser(login: LoginDto): Promise<LoginDto> {
     const { email, password } = login;
     const user = await this.userModel.findOne({ email });
-    // console.log('Usuario encontrado: ', user);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -51,7 +50,6 @@ export class AuthService {
     user.password = undefined; // Exclude password from the login object
 
     const res = { ...user.toObject(), password: undefined }; // Exclude password from the returned object
-    console.log('Usuario res: ', res);
     return res;
   }
 }
