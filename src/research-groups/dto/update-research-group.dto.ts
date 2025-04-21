@@ -7,5 +7,5 @@ export class UpdateResearchGroupDto extends PartialType(
   code?: string | undefined;
   name?: string | undefined;
   description?: string | undefined;
-  status?: 'ACTIVE' | 'INACTIVE' | undefined;
+  status?: 'ACTIVE' | 'DESACTIVE' | undefined;
 }

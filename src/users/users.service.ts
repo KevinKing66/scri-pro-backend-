@@ -43,8 +43,6 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    console.log('user', user);
-    console.log('updateUserDto', updateUserDto);
     const updateFields = Object.fromEntries(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       Object.entries(updateUserDto).filter(([_, value]) => value !== undefined),

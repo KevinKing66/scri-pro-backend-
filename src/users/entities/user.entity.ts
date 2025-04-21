@@ -12,7 +12,7 @@ export const UserSchema = new mongoose.Schema({
     required: true,
   },
   researchGroupId: { type: String, required: false },
-  status: { type: String, enum: ['ACTIVE', 'INACTIVE'], default: 'ACTIVE' },
+  status: { type: String, enum: ['ACTIVE', 'DESACTIVE'], default: 'ACTIVE' },
   docNum: { type: String, required: true },
   docType: { type: String, required: true },
   phone: { type: String, required: true },
@@ -28,7 +28,7 @@ export class User extends mongoose.Document {
   password?: string;
   role: 'STUDENT' | 'TEACHER' | 'ADMIN';
   researchGroupId?: string;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: 'ACTIVE' | 'DESACTIVE';
   docNum: string;
   docType: string;
   phone: string;

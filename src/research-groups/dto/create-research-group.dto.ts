@@ -3,5 +3,5 @@ export class CreateResearchGroupDto {
   name: string;
   description: string;
   admin?: string;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: 'ACTIVE' | 'DESACTIVE';
 }

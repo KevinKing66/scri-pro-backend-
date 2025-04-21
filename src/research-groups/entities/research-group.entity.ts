@@ -5,7 +5,7 @@ export class ResearchGroup {
   name: string;
   description: string;
   admin?: string;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: 'ACTIVE' | 'DESACTIVE';
   createdAt: Date = new Date();
   updatedAt: Date = new Date();
 }
@@ -15,7 +15,7 @@ export const ResearchGroupSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: { type: String, required: true },
   admin: { type: String, required: false },
-  status: { type: String, enum: ['ACTIVE', 'INACTIVE'], default: 'ACTIVE' },
+  status: { type: String, enum: ['ACTIVE', 'DESACTIVE'], default: 'ACTIVE' },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
