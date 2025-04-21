@@ -4,7 +4,11 @@ export class ResearchGroup {
   code: string;
   name: string;
   description: string;
+  faculty: string;
+  knowledgeArea: string;
   admin?: string;
+  contactEmail?: string;
+  contactPhone?: string;
   status: 'ACTIVE' | 'DESACTIVE';
   createdAt: Date = new Date();
   updatedAt: Date = new Date();
@@ -15,6 +19,10 @@ export const ResearchGroupSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: { type: String, required: true },
   admin: { type: String, required: false },
+  faculty: { type: String, required: false },
+  knowledgeArea: { type: String, required: false },
+  contactEmail: { type: String, required: false },
+  contactPhone: { type: String, required: false },
   status: { type: String, enum: ['ACTIVE', 'DESACTIVE'], default: 'ACTIVE' },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
