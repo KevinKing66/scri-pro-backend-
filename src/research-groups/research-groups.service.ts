@@ -28,7 +28,7 @@ export class ResearchGroupsService {
     return res;
   }
 
-  async findAll() {
+  async findAll(): Promise<ResearchGroup[]> {
     const researchGroups = await this.researchGroupModel.find();
     if (!researchGroups) {
       throw new NotFoundException('ResearchGroups not found');
@@ -36,7 +36,7 @@ export class ResearchGroupsService {
     return researchGroups;
   }
 
-  async findOne(code: string) {
+  async findOne(code: string): Promise<ResearchGroup> {
     const researchGroup = await this.researchGroupModel.findOne({ code: code });
     if (!researchGroup) {
       throw new NotFoundException('ResearchGroup not found');
