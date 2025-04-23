@@ -8,17 +8,17 @@ import { InjectModel } from '@nestjs/mongoose';
 export class EvidencesService {
   constructor(
     @InjectModel('Evidence')
-    private readonly projectModel: Model<Evidence>,
+    private readonly evidenceModel: Model<Evidence>,
   ) {}
 
   async create(createEvidenceDto: CreateEvidenceDto) {
-    const evidence = new this.projectModel(createEvidenceDto);
+    const evidence = new this.evidenceModel(createEvidenceDto);
     const res = await evidence.save();
     return res;
   }
 
   async findAll() {
-    const evidences = await this.projectModel.find();
+    const evidences = await this.evidenceModel.find();
     if (!evidences) {
       throw new Error('Evidences not found');
     }
@@ -26,7 +26,7 @@ export class EvidencesService {
   }
 
   async findOne(uuid: string) {
-    const evidence = await this.projectModel.findOne({ id: uuid });
+    const evidence = await this.evidenceModel.findOne({ id: uuid });
     if (!evidence) {
       throw new Error('Evidence not found');
     }
@@ -34,11 +34,11 @@ export class EvidencesService {
   }
 
   async remove(uuid: string) {
-    const evidence = await this.projectModel.findOne({ uuid });
+    const evidence = await this.evidenceModel.findOne({ uuid });
     if (!evidence) {
       throw new Error('Evidence not found');
     }
-    const res = await this.projectModel.deleteOne({ _id: evidence._id });
+    const res = await this.evidenceModel.deleteOne({ _id: evidence._id });
     if (!res) {
       throw new Error('Evidence not found');
     }

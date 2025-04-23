@@ -10,5 +10,6 @@ import { EvidenceSchema } from './entities/evidence.entity';
   imports: [
     MongooseModule.forFeature([{ name: 'Evidence', schema: EvidenceSchema }]),
   ],
+  exports: [EvidencesService],
 })
 export class EvidencesModule {}

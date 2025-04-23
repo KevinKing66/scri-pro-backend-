@@ -4,11 +4,25 @@ import { CreateEvidenceDto } from './dto/create-evidence.dto';
 
 @Controller('evidences')
 export class EvidencesController {
-  constructor(private readonly evidencesService: EvidencesService) {}
+  constructor(
+    private readonly evidencesService: EvidencesService,
+    // private readonly projectsService: ProjectsService,
+  ) {}
 
   @Post()
-  create(@Body() createEvidenceDto: CreateEvidenceDto) {
-    return this.evidencesService.create(createEvidenceDto);
+  async create(@Body() createEvidenceDto: CreateEvidenceDto) {
+    // this.projectsService
+    //   .findOne(createEvidenceDto.projectUuid)
+    //   .then((project) => {
+    //     if (!project) {
+    //       throw new Error('Project not found');
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     throw new Error('Error finding project: ' + error.message);
+    //   });
+    const evidence = await this.evidencesService.create(createEvidenceDto);
+    return evidence;
   }
 
   @Get()
