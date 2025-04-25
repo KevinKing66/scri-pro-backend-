@@ -10,6 +10,8 @@ import { User } from 'src/users/entities/user.entity';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { ChangePassword } from './dto/change-password.dto';
+import { ForgotPassword } from './dto/forgot-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -33,6 +35,41 @@ export class AuthService {
     });
     const res = await user.save();
     return res;
+  }
+
+  async ChangePassword(data: ChangePassword) {
+    const { email, _id, newPassword } = data;
+    if (_id) {
+      await this.userModel.updateOne(
+        { _id },
+        { $set: { password: newPassword } },
+      );
+      return { successful: true };
+    }
+    if (email && !_id) {
+      await this.userModel.updateOne(
+        { email },
+        { $set: { password: newPassword } },
+      );
+      return { successful: true };
+    }
+    return { successful: false };
+  }
+
+  async forgotPassword(data: ForgotPassword) {
+    const { email, newPassword } = data;
+    if (!email) {
+      throw new NotFoundException('Email is required');
+    }
+    const user = await this.userModel.findOne({ email });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    await this.userModel.updateOne(
+      { email },
+      { $set: { password: newPassword } },
+    );
+    return { successful: true };
   }
 
   async validateUser(login: LoginDto): Promise<LoginDto> {
@@ -68,8 +105,7 @@ export class AuthService {
     // Crear el payload para el token JWT
     const payload = { email: user.email, sub: user._id };
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    const access_token = (this.jwtService as JwtService).sign(payload, {
+    const access_token = this.jwtService.sign(payload, {
       expiresIn: '72h',
     });
     // Retornar el token y todos los datos del usuario
