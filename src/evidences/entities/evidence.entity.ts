@@ -8,6 +8,7 @@ export interface Evidence {
   url: string;
   creationDateTime: Date;
   description: string;
+  participants: string[];
 }
 
 export const EvidenceSchema = new Schema<Evidence>({
