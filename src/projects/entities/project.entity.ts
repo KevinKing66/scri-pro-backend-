@@ -8,6 +8,7 @@ export class Project extends Document {
   code?: string;
   imageUrl?: string;
   name: string;
+  type: string;
   evidences: Evidence[];
   description: string;
   creationDateTime: Date;
