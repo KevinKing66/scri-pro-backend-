@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { ResearchGroupsModule } from './research-groups/research-groups.module';
 import { ProjectsModule } from './projects/projects.module';
 import { EvidencesModule } from './evidences/evidences.module';
+import { AwsModule } from './aws/aws.module';
 
 @Module({
   imports: [
@@ -19,9 +20,9 @@ import { EvidencesModule } from './evidences/evidences.module';
       `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@uniautonoma.mewn3yv.mongodb.net/?retryWrites=true&w=majority&appName=Uniautonoma`,
     ),
     AuthModule,
-    ResearchGroupsModule,
     ProjectsModule,
     EvidencesModule,
+    AwsModule,
   ],
   controllers: [AppController, UsersController],
   providers: [AppService],
