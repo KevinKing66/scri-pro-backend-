@@ -24,6 +24,11 @@ export class AwsController {
     return { images: await this.awsService.listFiles() };
   }
 
+  @Get('file')
+  async findAllFiles() {
+    return await this.awsService.listKeys();
+  }
+
   @Get('file/:key')
   async getFile(@Param('key') key: string) {
     return { imageUrl: await this.awsService.getFileUrl(key) };
