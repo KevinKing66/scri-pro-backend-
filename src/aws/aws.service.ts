@@ -78,6 +78,16 @@ export class AwsService {
     return url;
   }
 
+  async getDownloadUrl(key: string): Promise<string> {
+    const command = new GetObjectCommand({
+      Bucket: this.bucketName,
+      Key: key,
+      ResponseContentDisposition: 'attachment', // <- force download
+    });
+
+    return await getSignedUrl(this.s3, command, { expiresIn: 3600 });
+  }
+
   /**
    * Comprueba si el archivo existe en S3.
    *
