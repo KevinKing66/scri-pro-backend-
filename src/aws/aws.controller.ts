@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -38,8 +39,9 @@ export class AwsController {
   async findAllFiles() {
     return await this.awsService.listKeys();
   }
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.awsService.remove(id);
-  // }
+
+  @Delete(':id')
+  remove(@Param('id') key: string) {
+    return this.awsService.deleteFile(key);
+  }
 }
