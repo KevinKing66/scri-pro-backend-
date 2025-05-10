@@ -30,6 +30,16 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'warn',
+      'prettier/prettier': [
+        'error',
+        {
+          printWidth: 100,
+          semi: true,
+          singleQuote: true,
+          trailingComma: 'all',
+        },
+      ],
+      'function-paren-newline': ['error', 'consistent'],
     },
   },
 );

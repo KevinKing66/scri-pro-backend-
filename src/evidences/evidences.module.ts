@@ -7,9 +7,7 @@ import { EvidenceSchema } from './entities/evidence.entity';
 @Module({
   controllers: [EvidencesController],
   providers: [EvidencesService],
-  imports: [
-    MongooseModule.forFeature([{ name: 'Evidence', schema: EvidenceSchema }]),
-  ],
+  imports: [MongooseModule.forFeature([{ name: 'Evidence', schema: EvidenceSchema }])],
   exports: [EvidencesService],
 })
 export class EvidencesModule {}

@@ -1,8 +1,5 @@
 import { Schema, model, Document } from 'mongoose';
-import {
-  Evidence,
-  EvidenceSchema,
-} from 'src/evidences/entities/evidence.entity';
+import { Evidence, EvidenceSchema } from 'src/evidences/entities/evidence.entity';
 
 export class Project extends Document {
   code?: string;
