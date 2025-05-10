@@ -7,6 +7,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -41,6 +42,31 @@ export class AwsService {
 
     await this.s3.send(new PutObjectCommand(params));
     return `https://${this.bucketName}.s3.amazonaws.com/${params.Key}`;
+  }
+
+  async uploadBase64Image(base64: string): Promise<string> {
+    // Extraer MIME type y base64 limpio
+    const matches = base64.match(/^data:(.+);base64,(.+)$/);
+    if (!matches) throw new Error('Invalid base64 string');
+
+    const mimeType = matches[1];
+    const base64Data = matches[2];
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    const fileExtension = mimeType.split('/')[1];
+    const fileName = `${uuidv4()}.${fileExtension}`;
+
+    const command = new PutObjectCommand({
+      Bucket: process.env.AWS_BUCKET,
+      Key: fileName,
+      Body: buffer,
+      ContentType: mimeType,
+      ACL: 'public-read',
+    });
+
+    await this.s3.send(command);
+
+    return `https://${process.env.AWS_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
   }
 
   async listFiles(): Promise<string[]> {
