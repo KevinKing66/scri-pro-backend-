@@ -1,11 +1,9 @@
 export class CreateEvidenceDto {
-  uuid: string;
-  fileName: string;
+  key: string;
   type: string;
   projectUuid: string;
-  url: string;
+  content: string;
   creationDateTime: Date;
   description: string;
-  //   type: 'IMAGE' | 'VIDEO' | 'DOCUMENT';
-  status: 'ACTIVE' | 'DESACTIVE';
+  participantIds: string[]; // <--- IDs de los usuarios
 }

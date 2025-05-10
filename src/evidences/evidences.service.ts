@@ -34,7 +34,7 @@ export class EvidencesService {
   }
 
   async remove(uuid: string) {
-    const evidence = await this.evidenceModel.findOne({ uuid });
+    const evidence = await this.evidenceModel.findOne({ key: uuid });
     if (!evidence) {
       throw new Error('Evidence not found');
     }
