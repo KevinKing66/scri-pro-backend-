@@ -8,7 +8,10 @@ import { AwsModule } from 'src/aws/aws.module';
 @Module({
   controllers: [EvidencesController],
   providers: [EvidencesService],
-  imports: [MongooseModule.forFeature([{ name: 'Evidence', schema: EvidenceSchema }]), AwsModule],
+  imports: [
+    MongooseModule.forFeature([{ name: 'Evidence', schema: EvidenceSchema }]),
+    AwsModule,
+  ],
   exports: [EvidencesService],
 })
 export class EvidencesModule {}

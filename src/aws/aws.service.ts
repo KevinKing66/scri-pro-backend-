@@ -17,8 +17,10 @@ export class AwsService {
 
   constructor(private configService: ConfigService) {
     // const region = this.configService.get<string>('AWS_REGION') ?? 'us-east-2';
-    const accessKeyId = this.configService.get<string>('AWS_ACCESS_KEY_ID') ?? '';
-    const secretAccessKey = this.configService.get<string>('AWS_SECRET_ACCESS_KEY') ?? '';
+    const accessKeyId =
+      this.configService.get<string>('AWS_ACCESS_KEY_ID') ?? '';
+    const secretAccessKey =
+      this.configService.get<string>('AWS_SECRET_ACCESS_KEY') ?? '';
 
     this.s3 = new S3Client({
       region: 'us-east-2', // Esto es suficiente
@@ -30,7 +32,10 @@ export class AwsService {
     this.bucketName = 'uni-autonoma-sci-pro';
   }
 
-  async uploadFile(file: Express.Multer.File, dir: string = ''): Promise<string> {
+  async uploadFile(
+    file: Express.Multer.File,
+    dir: string = '',
+  ): Promise<string> {
     if (dir.length > 0 && dir[dir.length - 1] !== '/') {
       dir = '/';
     }
@@ -78,7 +83,11 @@ export class AwsService {
   async listFiles(): Promise<string[]> {
     const command = new ListObjectsV2Command({ Bucket: this.bucketName });
     const { Contents } = await this.s3.send(command);
-    return Contents?.map((file) => `https://${this.bucketName}.s3.amazonaws.com/${file.Key}`) || [];
+    return (
+      Contents?.map(
+        (file) => `https://${this.bucketName}.s3.amazonaws.com/${file.Key}`,
+      ) || []
+    );
   }
 
   async listKeys(): Promise<string[]> {

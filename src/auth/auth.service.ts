@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -36,11 +40,17 @@ export class AuthService {
   async ChangePassword(data: ChangePassword) {
     const { email, _id, newPassword } = data;
     if (_id) {
-      await this.userModel.updateOne({ _id }, { $set: { password: newPassword } });
+      await this.userModel.updateOne(
+        { _id },
+        { $set: { password: newPassword } },
+      );
       return { successful: true };
     }
     if (email && !_id) {
-      await this.userModel.updateOne({ email }, { $set: { password: newPassword } });
+      await this.userModel.updateOne(
+        { email },
+        { $set: { password: newPassword } },
+      );
       return { successful: true };
     }
     return { successful: false };
@@ -55,7 +65,10 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    await this.userModel.updateOne({ email }, { $set: { password: newPassword } });
+    await this.userModel.updateOne(
+      { email },
+      { $set: { password: newPassword } },
+    );
     return { successful: true };
   }
 
@@ -80,7 +93,9 @@ export class AuthService {
     const res = { ...user.toObject(), password: undefined }; // Exclude password from the returned object
     return res;
   }
-  async login(loginDto: LoginDto): Promise<{ access_token: string; user: any }> {
+  async login(
+    loginDto: LoginDto,
+  ): Promise<{ access_token: string; user: any }> {
     if (!this.jwtService) {
       throw new UnauthorizedException('JWT service is not available');
     }

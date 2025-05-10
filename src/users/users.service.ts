@@ -47,7 +47,10 @@ export class UsersService {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       Object.entries(updateUserDto).filter(([_, value]) => value !== undefined),
     );
-    const res = await this.userModel.updateOne({ email }, { $set: updateFields });
+    const res = await this.userModel.updateOne(
+      { email },
+      { $set: updateFields },
+    );
     if (!res) {
       throw new NotFoundException('User not found');
     }

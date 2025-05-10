@@ -7,6 +7,10 @@ import { ResearchGroupSchema } from './entities/research-group.entity';
 @Module({
   controllers: [ResearchGroupsController],
   providers: [ResearchGroupsService],
-  imports: [MongooseModule.forFeature([{ name: 'ResearchGroup', schema: ResearchGroupSchema }])],
+  imports: [
+    MongooseModule.forFeature([
+      { name: 'ResearchGroup', schema: ResearchGroupSchema },
+    ]),
+  ],
 })
 export class ResearchGroupsModule {}
