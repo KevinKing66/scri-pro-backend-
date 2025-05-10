@@ -30,10 +30,14 @@ export class AwsService {
     this.bucketName = 'uni-autonoma-sci-pro';
   }
 
-  async uploadFile(file: Express.Multer.File): Promise<string> {
+  async uploadFile(file: Express.Multer.File, dir: string = ''): Promise<string> {
+    if (dir.length > 0 && dir[dir.length - 1] !== '/') {
+      dir = '/';
+    }
+
     const params = {
       Bucket: this.bucketName,
-      Key: `test/${file.originalname}`,
+      Key: `${dir}${file.originalname}`,
       Body: file.buffer,
       ContentType: file.mimetype,
     };
@@ -42,7 +46,7 @@ export class AwsService {
     return `https://${this.bucketName}.s3.amazonaws.com/${params.Key}`;
   }
 
-  async uploadBase64Image(base64: string): Promise<string> {
+  async uploadBase64Image(base64: string, dir: string = ''): Promise<string> {
     // Extraer MIME type y base64 limpio
     const matches = base64.match(/^data:(.+);base64,(.+)$/);
     if (!matches) throw new Error('Invalid base64 string');
@@ -51,12 +55,16 @@ export class AwsService {
     const base64Data = matches[2];
     const buffer = Buffer.from(base64Data, 'base64');
 
+    if (dir.length > 0 && dir[dir.length - 1] !== '/') {
+      dir = '/';
+    }
+
     const fileExtension = mimeType.split('/')[1];
     const fileName = `${uuidv4()}.${fileExtension}`;
 
     const command = new PutObjectCommand({
       Bucket: process.env.AWS_BUCKET,
-      Key: fileName,
+      Key: dir + fileName,
       Body: buffer,
       ContentType: mimeType,
       ACL: 'public-read',
