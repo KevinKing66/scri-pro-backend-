@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [ConfigModule.forRoot()],
+  exports: [AwsService],
   controllers: [AwsController],
   providers: [AwsService],
 })
