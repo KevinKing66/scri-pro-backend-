@@ -17,7 +17,6 @@ export const ParticipantSchema = new Schema<Participant>(
 
 export interface Evidence {
   key: string;
-  projectUuid: string;
   type: string;
   url?: string;
   creationDateTime: Date;
@@ -28,7 +27,6 @@ export interface Evidence {
 export const EvidenceSchema = new Schema<Evidence>({
   key: { type: String, required: true },
   type: { type: String, required: true },
-  projectUuid: { type: String, required: true },
   creationDateTime: { type: Date, required: true },
   description: { type: String, required: true },
   participants: { type: [ParticipantSchema], required: true, default: [] },
