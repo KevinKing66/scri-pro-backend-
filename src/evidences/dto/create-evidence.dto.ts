@@ -1,3 +1,5 @@
+import { Participant } from '../entities/evidence.entity';
+
 export class CreateEvidenceDto {
   key: string;
   type: string;
@@ -5,5 +7,5 @@ export class CreateEvidenceDto {
   content: string;
   creationDateTime: Date;
   description: string;
-  participantIds: string[]; // <--- IDs de los usuarios
+  participants: Participant[];
 }

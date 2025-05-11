@@ -3,16 +3,21 @@ import { CreateEvidenceDto } from './dto/create-evidence.dto';
 import { Model } from 'mongoose';
 import { Evidence } from './entities/evidence.entity';
 import { InjectModel } from '@nestjs/mongoose';
+import { AwsService } from 'src/aws/aws.service';
 
 @Injectable()
 export class EvidencesService {
   constructor(
     @InjectModel('Evidence')
     private readonly evidenceModel: Model<Evidence>,
+    private readonly awsService: AwsService,
   ) {}
 
   async create(createEvidenceDto: CreateEvidenceDto) {
-    const evidence = new this.evidenceModel(createEvidenceDto);
+    const key = await this.awsService.uploadBase64Image(
+      createEvidenceDto.content,
+    );
+    const evidence = new this.evidenceModel({ ...createEvidenceDto, key: key });
     const res = await evidence.save();
     return res;
   }
@@ -25,10 +30,18 @@ export class EvidencesService {
     return evidences;
   }
 
-  async findOne(uuid: string) {
-    const evidence = await this.evidenceModel.findOne({ id: uuid });
+  async findOne(_id: string) {
+    const evidence = await this.evidenceModel.findOne({ _id: _id });
+
     if (!evidence) {
       throw new Error('Evidence not found');
+    }
+
+    const key = evidence?.key ?? '';
+    if (evidence && evidence.type === 'image') {
+      evidence.url = await this.awsService.getFileUrl(key);
+    } else {
+      evidence.url = await this.awsService.getDownloadUrl(evidence.key);
     }
     return evidence;
   }
@@ -38,6 +51,7 @@ export class EvidencesService {
     if (!evidence) {
       throw new Error('Evidence not found');
     }
+    await this.awsService.deleteFile(evidence.key);
     const res = await this.evidenceModel.deleteOne({ _id: evidence._id });
     if (!res) {
       throw new Error('Evidence not found');

@@ -1,6 +1,6 @@
 import { Schema, model, Document } from 'mongoose';
 
-interface Participant {
+export interface Participant {
   _id: string;
   name: string;
   email: string;
@@ -17,12 +17,12 @@ export const ParticipantSchema = new Schema<Participant>(
 
 export interface Evidence {
   key: string;
-  type: string;
   projectUuid: string;
-  url: string;
+  type: string;
+  url?: string;
   creationDateTime: Date;
-  description: string;
-  participants: Participant[];
+  description?: string;
+  participants?: Participant[];
 }
 
 export const EvidenceSchema = new Schema<Evidence>({
