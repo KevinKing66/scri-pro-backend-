@@ -7,6 +7,6 @@ export class UpdateProjectDto extends PartialType(CreateProjectDto) {
   description?: string | undefined;
   status?: 'ACTIVE' | 'COMPLETED' | 'PAUSED' | undefined;
   researchGroupCode?: string | undefined;
-  startDate?: Date | undefined;
+  creationDateTime?: Date | undefined;
   endDate?: Date | undefined;
 }

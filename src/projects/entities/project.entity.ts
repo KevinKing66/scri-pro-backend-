@@ -5,17 +5,17 @@ import {
 } from 'src/evidences/entities/evidence.entity';
 
 export class Project extends Document {
-  code?: string;
+  code: string;
   imageUrl?: string;
   name: string;
-  type: string;
+  type?: string;
   evidences: Evidence[];
   description: string;
   creationDateTime: Date;
   updatedAt?: Date;
   status: 'ACTIVE' | 'COMPLETED' | 'PAUSED';
   members: { email: string; name: string }[];
-  researchGroupId?: number;
+  researchGroupId?: { email: string; name: string };
 }
 
 export const ProjectSchema = new Schema<Project>({
