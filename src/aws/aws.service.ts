@@ -4,6 +4,7 @@ import {
   ListObjectsV2Command,
   GetObjectCommand,
   DeleteObjectCommand,
+  DeleteObjectsCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable } from '@nestjs/common';
@@ -53,7 +54,11 @@ export class AwsService {
     return `https://${this.bucketName}.s3.amazonaws.com/${params.Key}`;
   }
 
-  async uploadBase64Image(base64: string, dir: string = ''): Promise<string> {
+  async uploadBase64Image(
+    base64: string,
+    dir: string = '',
+    prefixFilename: string = '',
+  ): Promise<string> {
     // Extraer MIME type y base64 limpio
     const matches = base64.match(/^data:(.+);base64,(.+)$/);
     if (!matches) throw new Error('Invalid base64 string');
@@ -68,7 +73,7 @@ export class AwsService {
 
     const fileExtension = mimeType.split('/')[1];
     const fileName = `${uuidv4()}.${fileExtension}`;
-    const key = dir + fileName;
+    const key = dir + prefixFilename + fileName;
     const command = new PutObjectCommand({
       Bucket: process.env.AWS_BUCKET,
       Key: key,
@@ -156,6 +161,20 @@ export class AwsService {
     const command = new DeleteObjectCommand({
       Bucket: this.bucketName,
       Key: key,
+    });
+
+    await this.s3.send(command);
+  }
+
+  async deleteFiles(keys: string[]): Promise<void> {
+    if (keys.length === 0) return;
+
+    const command = new DeleteObjectsCommand({
+      Bucket: process.env.AWS_BUCKET,
+      Delete: {
+        Objects: keys.map((key: string) => ({ Key: key })),
+        Quiet: false, // dont show details
+      },
     });
 
     await this.s3.send(command);
