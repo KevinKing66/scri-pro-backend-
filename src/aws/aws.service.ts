@@ -40,9 +40,11 @@ export class AwsService {
       dir = '/';
     }
 
+    const key = `${dir}${file.originalname}`;
+
     const params = {
       Bucket: this.bucketName,
-      Key: `${dir}${file.originalname}`,
+      Key: key,
       Body: file.buffer,
       ContentType: file.mimetype,
     };
@@ -66,10 +68,10 @@ export class AwsService {
 
     const fileExtension = mimeType.split('/')[1];
     const fileName = `${uuidv4()}.${fileExtension}`;
-
+    const key = dir + fileName;
     const command = new PutObjectCommand({
       Bucket: process.env.AWS_BUCKET,
-      Key: dir + fileName,
+      Key: key,
       Body: buffer,
       ContentType: mimeType,
       ACL: 'public-read',
@@ -77,7 +79,7 @@ export class AwsService {
 
     await this.s3.send(command);
 
-    return `https://${process.env.AWS_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
+    return `https://${this.bucketName}.s3.amazonaws.com/${key}`;
   }
 
   async listFiles(): Promise<string[]> {
