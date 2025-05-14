@@ -4,6 +4,7 @@ import { ProjectsController } from './projects.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ProjectSchema } from './entities/project.entity';
 import { EvidencesModule } from 'src/evidences/evidences.module';
+import { AwsModule } from 'src/aws/aws.module';
 
 @Module({
   controllers: [ProjectsController],
@@ -11,6 +12,7 @@ import { EvidencesModule } from 'src/evidences/evidences.module';
   imports: [
     MongooseModule.forFeature([{ name: 'Project', schema: ProjectSchema }]),
     EvidencesModule,
+    AwsModule,
   ],
   exports: [ProjectsService],
 })
