@@ -10,6 +10,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { ConfigService } from '@nestjs/config';
+import { FileInfo } from 'src/shared/entity/file.entity';
 
 @Injectable()
 export class AwsService {
@@ -58,7 +59,7 @@ export class AwsService {
     base64: string,
     dir: string = '',
     prefixFilename: string = '',
-  ): Promise<string> {
+  ): Promise<FileInfo> {
     // Extraer MIME type y base64 limpio
     const matches = base64.match(/^data:(.+);base64,(.+)$/);
     if (!matches) throw new Error('Invalid base64 string');
@@ -79,12 +80,15 @@ export class AwsService {
       Key: key,
       Body: buffer,
       ContentType: mimeType,
-      ACL: 'public-read',
+      // ACL: 'public-read',
     });
 
     await this.s3.send(command);
-
-    return `https://${this.bucketName}.s3.amazonaws.com/${key}`;
+    const data: FileInfo = {
+      key,
+      url: `https://${this.bucketName}.s3.amazonaws.com/${key}`,
+    };
+    return data;
   }
 
   async listFiles(): Promise<string[]> {
