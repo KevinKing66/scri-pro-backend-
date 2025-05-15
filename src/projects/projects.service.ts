@@ -32,7 +32,8 @@ export class ProjectsService {
     if (!res) {
       throw new Error('Project not found');
     }
-    return await this.addEvidencesToProject(res._id as string, dto.evidences);
+    await this.addEvidencesToProject(res._id as string, dto.evidences);
+    return res;
   }
 
   async addEvidencesToProject(_id: string, dto: CreateEvidenceDto[]) {
