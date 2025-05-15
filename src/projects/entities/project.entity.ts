@@ -15,7 +15,7 @@ export class Project extends Document {
   updatedAt?: Date;
   status: 'ACTIVE' | 'COMPLETED' | 'PAUSED';
   members: { email: string; name: string }[];
-  researchGroupId?: { email: string; name: string };
+  researchGroupId?: { code: string; name: string };
 }
 
 export const ProjectSchema = new Schema<Project>({
@@ -40,7 +40,13 @@ export const ProjectSchema = new Schema<Project>({
     ],
     required: true,
   },
-  researchGroupId: { type: Number, required: false },
+  researchGroupId: {
+    type: {
+      code: { type: String, required: true },
+      name: { type: String, required: true },
+    },
+    required: false,
+  },
 });
 
 // Export Models

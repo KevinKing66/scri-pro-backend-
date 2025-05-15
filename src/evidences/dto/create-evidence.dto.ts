@@ -1,11 +1,10 @@
 import { Participant } from '../entities/evidence.entity';
 
 export class CreateEvidenceDto {
-  key: string;
-  type: string;
-  projectUuid: string;
+  key?: string;
   content: string;
-  creationDateTime: Date;
+  type: string;
+  creationDateTime?: Date;
   description: string;
-  participants: Participant[];
+  participants?: Participant[];
 }

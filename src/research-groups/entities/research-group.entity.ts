@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 
 export class ResearchGroup {
-  code!: string;
-  name!: string;
-  description!: string;
+  code: string;
+  name: string;
+  description: string;
   admin?: string;
   faculty?: string;
   knowledgeArea?: string;
