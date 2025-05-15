@@ -1,14 +1,14 @@
 import { Schema, model, Document } from 'mongoose';
 
-export interface File {
+export interface FileInfo {
   key: string;
   type?: string;
   url?: string;
 }
 
-export const FileSchema = new Schema<File>({
+export const FileSchema = new Schema<FileInfo>({
   key: { type: String, required: true },
   type: { type: String, required: true },
 });
 
-export const FileModel = model<File>('', FileSchema);
+export const FileModel = model<FileInfo>('', FileSchema);
