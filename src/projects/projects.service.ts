@@ -198,6 +198,9 @@ export class ProjectsService {
     if (!project) {
       throw new Error('Project not found');
     }
+    if (project.image) {
+      await this.awsService.deleteFile(project.image.key);
+    }
     await this.awsService.deleteFiles(project.evidences.map((e) => e.key));
     const res = await this.projectModel.deleteOne({ code });
     if (!res) {
