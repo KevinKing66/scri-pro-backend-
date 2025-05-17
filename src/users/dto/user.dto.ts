@@ -3,7 +3,7 @@ export class UserDto {
   email: string;
   code?: string;
   phone?: string;
-  researchGroup?: { code: string; name: string }[];
+  researchGroups?: { code: string; name: string }[];
   role: string;
   status: boolean;
 }
