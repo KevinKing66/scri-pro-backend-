@@ -5,26 +5,12 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
   constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
-
-  async create(createUserDto: CreateUserDto) {
-    const user = new this.userModel(createUserDto);
-    const existingUser = await this.userModel.findOne({
-      email: createUserDto.email,
-    });
-    // Check if the user already exists
-    if (existingUser) {
-      throw new NotFoundException('User already exists');
-    }
-    const res = await user.save();
-    return res;
-  }
 
   async findAll() {
     const users = await this.userModel.find();
