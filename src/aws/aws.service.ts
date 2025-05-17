@@ -69,7 +69,7 @@ export class AwsService {
     const buffer = Buffer.from(base64Data, 'base64');
 
     if (dir.length > 0 && dir[dir.length - 1] !== '/') {
-      dir = '/';
+      dir += '/';
     }
 
     const fileExtension = mimeType.split('/')[1];
