@@ -5,7 +5,7 @@ export class CreateUserDto {
   lastName: string;
   password: string;
   role: 'STUDENT' | 'TEACHER' | 'ADMIN';
-  researchGroupId: number;
+  researchGroup: { code: string; name: string }[];
   status: 'ACTIVE' | 'INACTIVE';
   docNum: string;
   docType: string;
