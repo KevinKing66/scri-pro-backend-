@@ -3,10 +3,11 @@ import {
   Evidence,
   EvidenceSchema,
 } from 'src/evidences/entities/evidence.entity';
+import { FileInfo, FileSchema } from 'src/shared/entity/file.entity';
 
 export class Project extends Document {
   code: string;
-  imageUrl?: string;
+  image?: FileInfo;
   name: string;
   type?: string;
   evidences: Evidence[];
@@ -15,12 +16,12 @@ export class Project extends Document {
   updatedAt?: Date;
   status: 'ACTIVE' | 'COMPLETED' | 'PAUSED';
   members: { email: string; name: string }[];
-  researchGroupId?: { code: string; name: string };
+  researchGroup?: { code: string; name: string };
 }
 
 export const ProjectSchema = new Schema<Project>({
   code: { type: String, required: false },
-  imageUrl: { type: String, required: false },
+  image: { type: FileSchema, required: false },
   name: { type: String, required: true },
   evidences: { type: [EvidenceSchema], required: true },
   description: { type: String, required: true },
@@ -40,7 +41,7 @@ export const ProjectSchema = new Schema<Project>({
     ],
     required: true,
   },
-  researchGroupId: {
+  researchGroup: {
     type: {
       code: { type: String, required: true },
       name: { type: String, required: true },

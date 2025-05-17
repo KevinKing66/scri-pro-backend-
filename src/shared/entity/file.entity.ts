@@ -8,7 +8,8 @@ export interface FileInfo {
 
 export const FileSchema = new Schema<FileInfo>({
   key: { type: String, required: true },
-  type: { type: String, required: true },
+  type: { type: String, required: false },
+  url: { type: String, required: false },
 });
 
-export const FileModel = model<FileInfo>('', FileSchema);
+export const FileModel = model<FileInfo>('File', FileSchema);
