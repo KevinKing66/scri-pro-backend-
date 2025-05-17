@@ -61,6 +61,7 @@ export class AuthService {
         throw error;
       }
 
+      console.log(error);
       throw new InternalServerErrorException(
         'Hubo un error intentando crear el usuario',
       );
