@@ -7,7 +7,7 @@ import {
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { Project } from './entities/project.entity';
 import { AwsService } from 'src/aws/aws.service';
 import { CreateEvidenceDto } from 'src/evidences/dto/create-evidence.dto';
@@ -98,6 +98,48 @@ export class ProjectsService {
       { _id: _id },
       { $push: { evidences: { $each: evidences } } },
     );
+  }
+
+  async findAllByKeyword(page = 1, limit = 10, keyword?: string) {
+    try {
+      const skip = (page - 1) * limit;
+
+      // Filtro de búsqueda si hay palabra clave
+      const filter: FilterQuery<Project> = {};
+
+      if (keyword) {
+        const regex = new RegExp(keyword, 'i'); // i = ignore case
+        filter.$or = [
+          { name: regex },
+          { code: regex },
+          { description: regex },
+          { 'members.name': regex },
+          { 'members.email': regex },
+          { 'researchGroup.name': regex },
+          { 'researchGroup.code': regex },
+        ];
+      }
+
+      const [data, total] = await Promise.all([
+        this.projectModel
+          .find(filter)
+          .skip(skip)
+          .limit(limit)
+          .sort({ updatedAt: -1, createdAt: -1 })
+          .lean(),
+        this.projectModel.countDocuments(filter),
+      ]);
+
+      return {
+        data,
+        total,
+        page,
+        totalPages: Math.ceil(total / limit),
+      };
+    } catch (error: unknown) {
+      console.error(error);
+      throw new InternalServerErrorException('Error al obtener los proyectos');
+    }
   }
 
   async findAll() {
