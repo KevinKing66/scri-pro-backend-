@@ -12,6 +12,6 @@ export class CreateProjectDto {
   creationDateTime?: Date;
   status: 'ACTIVE' | 'COMPLETED' | 'PAUSED';
   members: MemberDTO[];
-  researchGroup: { code: string; name: string };
+  researchGroups: { code: string; name: string };
   adminId: MemberDTO;
 }

@@ -8,6 +8,6 @@ export class UpdateProjectDto extends PartialType(CreateProjectDto) {
   image?: CreateFileInfoDTO;
   description?: string | undefined;
   status?: 'ACTIVE' | 'COMPLETED' | 'PAUSED' | undefined;
-  researchGroup?: { code: string; name: string } | undefined;
+  researchGroups?: { code: string; name: string } | undefined;
   endDate?: Date | undefined;
 }
