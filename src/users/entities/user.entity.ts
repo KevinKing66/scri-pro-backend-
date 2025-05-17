@@ -14,7 +14,7 @@ export const UserSchema = new mongoose.Schema<User>({
   researchGroups: {
     type: [
       {
-        email: { type: String, required: true },
+        code: { type: String, required: true },
         name: { type: String, required: true },
       },
     ],
