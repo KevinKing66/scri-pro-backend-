@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -25,7 +29,7 @@ export class UsersService {
   async findAll() {
     const users = await this.userModel.find();
     if (!users) {
-      throw new NotFoundException('Users not found');
+      throw new NotFoundException('No se encontrarón usuarios');
     }
     return users;
   }
@@ -39,26 +43,41 @@ export class UsersService {
   }
 
   async update(email: string, updateUserDto: UpdateUserDto) {
-    const user = await this.userModel.findOne({ email: email });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    const updateFields = Object.fromEntries(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      Object.entries(updateUserDto).filter(([_, value]) => value !== undefined),
-    );
-    const res = await this.userModel.updateOne(
-      { email },
-      { $set: updateFields },
-    );
-    if (!res) {
-      throw new NotFoundException('User not found');
-    }
-    if (!res.acknowledged) {
-      throw new Error('Update operation not acknowledged by the database');
-    }
+    try {
+      const user = await this.userModel.findOne({ email });
+      if (!user) {
+        throw new NotFoundException('No existe el usuario');
+      }
 
-    return `This action updates a #${email} user`;
+      const updateFields = Object.fromEntries(
+        Object.entries(updateUserDto).filter(
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          ([_, value]) => value !== undefined,
+        ),
+      );
+
+      const res = await this.userModel.updateOne(
+        { email },
+        { $set: updateFields },
+      );
+
+      if (!res || res.matchedCount === 0) {
+        throw new NotFoundException('No se encontró usuario para actualizar');
+      }
+
+      if (!res.acknowledged) {
+        throw new InternalServerErrorException(
+          'Operación de actualización no reconocida por la base de datos',
+        );
+      }
+
+      return `Se actualizar el usuario #${email}`;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error while updating user');
+    }
   }
 
   async remove(email: string) {
