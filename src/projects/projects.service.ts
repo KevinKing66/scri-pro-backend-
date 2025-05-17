@@ -7,6 +7,7 @@ import { Project } from './entities/project.entity';
 import { AwsService } from 'src/aws/aws.service';
 import { CreateEvidenceDto } from 'src/evidences/dto/create-evidence.dto';
 import { Evidence } from 'src/evidences/entities/evidence.entity';
+import { FileInfo } from 'src/shared/entity/file.entity';
 
 @Injectable()
 export class ProjectsService {
@@ -17,9 +18,18 @@ export class ProjectsService {
   ) {}
 
   async create(dto: CreateProjectDto) {
+    let thumbnail: FileInfo | null = null;
+    if (dto.image) {
+      thumbnail = await this.awsService.uploadBase64Image(
+        dto.image.content,
+        'thumbnail',
+        '',
+      );
+    }
     const project = new this.projectModel({
       ...dto,
       evidences: [],
+      image: thumbnail,
     });
     const existingProject = await this.projectModel.findOne({
       code: dto.code,
