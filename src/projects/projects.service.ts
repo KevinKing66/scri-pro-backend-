@@ -51,7 +51,7 @@ export class ProjectsService {
       dto.map(async (evidence) => {
         const fileInfo = await this.awsService.uploadBase64Image(
           evidence.content,
-          '',
+          'evidences',
           _id,
         );
 
