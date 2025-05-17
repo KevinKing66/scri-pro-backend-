@@ -138,7 +138,6 @@ export class ProjectsService {
       if (!project) {
         throw new NotFoundException('Proyecto no encontrado');
       }
-
       // Filtrar campos undefined del DTO
       // eslint-disable-next-line prefer-const
       let updateFields = Object.fromEntries(
@@ -161,6 +160,8 @@ export class ProjectsService {
         );
         updateFields.image = thumbnail;
       }
+
+      updateFields.updatedAt = new Date();
 
       const res = await this.projectModel.updateOne(
         { code },
