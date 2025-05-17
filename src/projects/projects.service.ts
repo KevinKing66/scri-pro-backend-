@@ -67,7 +67,7 @@ export class ProjectsService {
         throw error;
       }
 
-      // ❌ Otro error inesperado: lo encapsulamos
+      console.error(error);
       throw new InternalServerErrorException(
         'Error inesperado al crear el proyecto',
       );
