@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ResearchGroupsService } from './research-groups.service';
 import { CreateResearchGroupDto } from './dto/create-research-group.dto';
@@ -23,6 +24,15 @@ export class ResearchGroupsController {
   @Get()
   findAll() {
     return this.researchGroupsService.findAll();
+  }
+
+  @Get('paginated')
+  findAllKeyword(
+    @Query('page') page = 1,
+    @Query('limit') limit = 1,
+    @Query('keyword') keyword?: string,
+  ) {
+    return this.researchGroupsService.findAllPaginated(page, limit, keyword);
   }
 
   @Get(':code')

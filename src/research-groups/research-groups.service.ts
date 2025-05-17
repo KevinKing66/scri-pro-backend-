@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateResearchGroupDto } from './dto/create-research-group.dto';
 import { UpdateResearchGroupDto } from './dto/update-research-group.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -26,6 +30,53 @@ export class ResearchGroupsService {
       throw new NotFoundException('ResearchGroup not found');
     }
     return res;
+  }
+
+  async findAllPaginated(page = 1, limit = 10, keyword?: string) {
+    try {
+      const skip = (page - 1) * limit;
+
+      // Construcción del filtro de búsqueda
+      const filter: Partial<Record<keyof ResearchGroup, any>> = {};
+
+      if (keyword) {
+        const regex = new RegExp(keyword, 'i');
+        Object.assign(filter, {
+          $or: [
+            { code: regex },
+            { name: regex },
+            { description: regex },
+            { admin: regex },
+            { faculty: regex },
+            { knowledgeArea: regex },
+            { contactEmail: regex },
+            { contactPhone: regex },
+          ],
+        });
+      }
+
+      const [data, total] = await Promise.all([
+        this.researchGroupModel
+          .find(filter)
+          .skip(skip)
+          .limit(limit)
+          .sort({ updatedAt: -1, createdAt: -1 })
+          .lean(),
+        this.researchGroupModel.countDocuments(filter),
+      ]);
+
+      return {
+        data,
+        total,
+        page,
+        totalPages: Math.ceil(total / limit),
+      };
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(
+        'Error al obtener los grupos de investigación',
+      );
+    }
   }
 
   async findAll(): Promise<ResearchGroup[]> {
