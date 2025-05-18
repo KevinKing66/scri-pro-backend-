@@ -25,6 +25,7 @@ export interface Evidence extends FileInfo {
 export const EvidenceSchema = new Schema<Evidence>({
   key: { type: String, required: true },
   type: { type: String, required: true },
+  url: { type: String, required: false },
   creationDateTime: { type: Date, required: true },
   description: { type: String, required: true },
   participants: { type: [ParticipantSchema], required: true, default: [] },

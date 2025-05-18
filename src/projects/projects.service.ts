@@ -177,7 +177,7 @@ export class ProjectsService {
   async getUrl(evidence: Evidence) {
     const key = evidence?.key ?? '';
     let url: string = '';
-    if (evidence && evidence.type === 'image') {
+    if (evidence && evidence.type?.startsWith('image')) {
       url = await this.awsService.getFileUrl(key);
     } else {
       url = await this.awsService.getDownloadUrl(evidence.key);
