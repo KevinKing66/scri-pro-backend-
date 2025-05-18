@@ -8,7 +8,7 @@ import {
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model } from 'mongoose';
+import { Document, FilterQuery, Model } from 'mongoose';
 import { Project } from './entities/project.entity';
 import { AwsService } from 'src/aws/aws.service';
 import { CreateEvidenceDto } from 'src/evidences/dto/create-evidence.dto';
@@ -77,22 +77,24 @@ export class ProjectsService {
 
   async addEvidencesToProject(_id: string, dto: CreateEvidenceDto[]) {
     const evidences = await Promise.all(
-      dto.map(async (evidence) => {
-        const fileInfo = await this.awsService.uploadBase64Image(
-          evidence.content,
-          'evidences',
-          _id,
-        );
+      dto
+        .filter((e) => e.content && !e.key)
+        .map(async (evidence) => {
+          const fileInfo = await this.awsService.uploadBase64Image(
+            evidence.content,
+            'evidences',
+            _id,
+          );
 
-        return {
-          key: fileInfo.key,
-          type: evidence.type,
-          url: fileInfo.url,
-          creationDateTime: new Date(),
-          description: evidence.description,
-          participants: evidence.participants,
-        };
-      }),
+          return {
+            key: fileInfo.key,
+            type: evidence.type,
+            url: fileInfo.url,
+            creationDateTime: new Date(),
+            description: evidence.description,
+            participants: evidence.participants,
+          };
+        }),
     );
 
     return this.projectModel.updateOne(
@@ -203,6 +205,17 @@ export class ProjectsService {
       if (!project) {
         throw new NotFoundException('Proyecto no encontrado');
       }
+
+      await this.removeDeletedEvidencesFromProject(project, updateProjectDto);
+
+      let evidencesList = updateProjectDto.evidences?.filter(
+        (evidence) => !evidence.key && evidence.content,
+      );
+      if (evidencesList) {
+        await this.addEvidencesToProject(_id, evidencesList);
+      }
+      updateProjectDto.evidences = undefined;
+
       // Filtrar campos undefined del DTO
       let updateFields = Object.fromEntries(
         Object.entries(updateProjectDto).filter(
@@ -216,7 +229,7 @@ export class ProjectsService {
       }
 
       let thumbnail: FileInfo | null = null;
-      if (updateProjectDto.image) {
+      if (updateProjectDto.image?.content) {
         thumbnail = await this.awsService.uploadBase64Image(
           updateProjectDto.image.content,
           'thumbnail',
@@ -224,6 +237,7 @@ export class ProjectsService {
         );
         updateFields.image = thumbnail;
       }
+      updateProjectDto.image = undefined;
 
       updateFields.updatedAt = new Date();
 
@@ -255,6 +269,18 @@ export class ProjectsService {
       throw new InternalServerErrorException(
         'Error inesperado al actualizar el proyecto',
       );
+    }
+  }
+
+  async removeDeletedEvidencesFromProject(
+    project: Project,
+    updateDto: UpdateProjectDto,
+  ) {
+    let evidencesToRemove = project.evidences
+      ?.filter((p) => !updateDto.evidences?.some((e) => e.key === p.key))
+      .map((e) => e.key);
+    if (evidencesToRemove) {
+      await this.awsService.deleteFiles(evidencesToRemove);
     }
   }
 
