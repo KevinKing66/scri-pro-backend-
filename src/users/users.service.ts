@@ -12,12 +12,33 @@ import { User } from './entities/user.entity';
 export class UsersService {
   constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
 
-  async findAll() {
-    const users = await this.userModel.find();
-    if (!users) {
-      throw new NotFoundException('No se encontrarón usuarios');
+  async findAll(filter: string = '', page: number = 1, limit: number = 10) {
+    const query = {
+      $or: [
+        { name: new RegExp(filter, 'i') },
+        { lastName: new RegExp(filter, 'i') },
+        { email: new RegExp(filter, 'i') },
+        { code: new RegExp(filter, 'i') },
+      ],
+    };
+
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.userModel.find(query).skip(skip).limit(limit),
+      this.userModel.countDocuments(query),
+    ]);
+
+    if (!data || data.length === 0) {
+      throw new NotFoundException('No se encontraron usuarios');
     }
-    return users;
+
+    return {
+      data,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async findOne(email: string) {
