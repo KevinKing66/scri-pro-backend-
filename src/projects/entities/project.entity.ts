@@ -12,6 +12,7 @@ import { FileInfo, FileSchema } from 'src/shared/entity/file.entity';
 export class Project extends Document {
   code: string;
   image?: FileInfo;
+  owner?: { email: string; name: string };
   name: string;
   type?: string;
   evidences: Evidence[];
@@ -25,6 +26,13 @@ export class Project extends Document {
 
 export const ProjectSchema = new Schema<Project>({
   code: { type: String, required: false },
+  owner: {
+    type: {
+      email: { type: String, required: true },
+      name: { type: String, required: true },
+    },
+    required: true,
+  },
   image: { type: FileSchema, required: false },
   name: { type: String, required: true },
   evidences: { type: [EvidenceSchema], required: true },

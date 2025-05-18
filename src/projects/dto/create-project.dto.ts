@@ -5,6 +5,7 @@ import { MemberDTO } from 'src/shared/dto/member.dto';
 export class CreateProjectDto {
   code: string;
   image?: CreateFileInfoDTO;
+  owner?: MemberDTO;
   name: string;
   type?: string;
   evidences: CreateEvidenceDto[];
