@@ -208,11 +208,8 @@ export class ProjectsService {
 
       await this.removeDeletedEvidencesFromProject(project, updateProjectDto);
 
-      let evidencesList = updateProjectDto.evidences?.filter(
-        (evidence) => !evidence.key && evidence.content,
-      );
-      if (evidencesList) {
-        await this.addEvidencesToProject(_id, evidencesList);
+      if (updateProjectDto.evidences) {
+        await this.addEvidencesToProject(_id, updateProjectDto.evidences);
       }
       updateProjectDto.evidences = undefined;
 
