@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 import {
   Injectable,
   BadRequestException,
@@ -147,6 +148,12 @@ export class ProjectsService {
     if (!projects) {
       throw new Error('Projects not found');
     }
+    for (let project of projects) {
+      const key = project.image?.key;
+      if (project.image && key) {
+        project.image.url = await this.getUrlByKey(key);
+      }
+    }
     return projects;
   }
 
@@ -156,7 +163,12 @@ export class ProjectsService {
       throw new Error('Project not found');
     }
 
-    for (const evidance of project.evidences) {
+    if (project.image) {
+      const key = project.image.key;
+      project.image.url = await this.getUrlByKey(key);
+    }
+
+    for (let evidance of project.evidences) {
       evidance.url = await this.getUrl(evidance);
     }
     return project;
@@ -173,6 +185,10 @@ export class ProjectsService {
     return url;
   }
 
+  async getUrlByKey(key: string) {
+    return await this.awsService.getFileUrl(key);
+  }
+
   async update(_id: string, updateProjectDto: UpdateProjectDto) {
     try {
       const project = await this.projectModel.findOne({ _id });
@@ -181,7 +197,6 @@ export class ProjectsService {
         throw new NotFoundException('Proyecto no encontrado');
       }
       // Filtrar campos undefined del DTO
-      // eslint-disable-next-line prefer-const
       let updateFields = Object.fromEntries(
         Object.entries(updateProjectDto).filter(
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
