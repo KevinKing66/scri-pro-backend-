@@ -87,7 +87,7 @@ export class ProjectsService {
           key: fileInfo.key,
           type: evidence.type,
           url: fileInfo.url,
-          creationDateTime: evidence.creationDateTime,
+          creationDateTime: new Date(),
           description: evidence.description,
           participants: evidence.participants,
         };
@@ -150,8 +150,8 @@ export class ProjectsService {
     return projects;
   }
 
-  async findOne(code: string) {
-    const project = await this.projectModel.findOne({ code });
+  async findOne(_id: string) {
+    const project = await this.projectModel.findOne({ _id: _id });
     if (!project) {
       throw new Error('Project not found');
     }
@@ -173,9 +173,9 @@ export class ProjectsService {
     return url;
   }
 
-  async update(code: string, updateProjectDto: UpdateProjectDto) {
+  async update(_id: string, updateProjectDto: UpdateProjectDto) {
     try {
-      const project = await this.projectModel.findOne({ code });
+      const project = await this.projectModel.findOne({ _id });
 
       if (!project) {
         throw new NotFoundException('Proyecto no encontrado');
@@ -206,7 +206,7 @@ export class ProjectsService {
       updateFields.updatedAt = new Date();
 
       const res = await this.projectModel.updateOne(
-        { code },
+        { code: _id },
         { $set: updateFields },
       );
 

@@ -30,21 +30,21 @@ export class ProjectsController {
     return this.projectsService.findAllByKeyword(+page, +limit, keyword);
   }
 
-  @Get(':code')
-  findOne(@Param('code') code: string) {
-    return this.projectsService.findOne(code);
+  @Get(':_id')
+  findOne(@Param('_id') _id: string) {
+    return this.projectsService.findOne(_id);
   }
 
-  @Patch(':code')
+  @Patch(':_id')
   update(
-    @Param('code') code: string,
+    @Param('_id') _id: string,
     @Body() updateProjectDto: UpdateProjectDto,
   ) {
-    return this.projectsService.update(code, updateProjectDto);
+    return this.projectsService.update(_id, updateProjectDto);
   }
 
-  @Delete(':code')
-  remove(@Param('code') code: string) {
-    return this.projectsService.remove(code);
+  @Delete(':_id')
+  remove(@Param('_id') _id: string) {
+    return this.projectsService.remove(_id);
   }
 }
