@@ -120,8 +120,8 @@ export class AwsService {
       Bucket: this.bucketName,
       Key: fileKey,
     });
-    const res = await this.s3.send(command); // Solo para verificar existencia
-    console.log('Res: ', res);
+    // const res = await this.s3.send(command); // Solo para verificar existencia
+    // console.log('Res: ', res);
 
     const url = await getSignedUrl(this.s3, command, { expiresIn: 3600 }); // 1 hora
     return url;
