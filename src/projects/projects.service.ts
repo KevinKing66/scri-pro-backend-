@@ -131,6 +131,13 @@ export class ProjectsService {
         this.projectModel.countDocuments(filter),
       ]);
 
+      for (let project of data) {
+        const key = project.image?.key;
+        if (project.image && key) {
+          project.image.url = await this.getUrlByKey(key);
+        }
+      }
+
       return {
         data,
         total,
