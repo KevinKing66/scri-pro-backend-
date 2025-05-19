@@ -238,9 +238,16 @@ export class ProjectsService {
       updateFields.updatedAt = new Date();
 
       const res = await this.projectModel.updateOne(
-        { code: _id },
+        { _id: _id },
         { $set: updateFields },
       );
+
+      // Verificar si el documento fue modificado
+      if (res.modifiedCount === 0) {
+        throw new BadRequestException(
+          'No se realizaron cambios en el proyecto',
+        );
+      }
 
       return {
         message: 'Proyecto actualizado correctamente',
