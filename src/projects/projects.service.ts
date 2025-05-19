@@ -272,6 +272,10 @@ export class ProjectsService {
     project: Project,
     updateDto: UpdateProjectDto,
   ) {
+    if (!updateDto.evidences || updateDto.evidences.length === 0) {
+      return;
+    }
+    // Eliminar evidencias que no están en el DTO de actualización
     let evidencesToRemove = project.evidences
       ?.filter((p) => !updateDto.evidences?.some((e) => e.key === p.key))
       .map((e) => e.key);
