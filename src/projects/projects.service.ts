@@ -221,7 +221,7 @@ export class ProjectsService {
         ),
       );
 
-      if (updateProjectDto.image && project.image?.key) {
+      if (updateProjectDto.image?.content !== '' && project.image?.key) {
         await this.awsService.deleteFile(project.image?.key);
       }
 
@@ -234,7 +234,6 @@ export class ProjectsService {
         );
         updateFields.image = thumbnail;
       }
-      updateProjectDto.image = undefined;
 
       updateFields.updatedAt = new Date();
 
