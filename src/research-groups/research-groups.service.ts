@@ -46,11 +46,11 @@ export class ResearchGroupsService {
             { code: regex },
             { name: regex },
             { description: regex },
-            { admin: regex },
+            { 'admin.name': regex },
+            { 'admin.email': regex },
             { faculty: regex },
             { knowledgeArea: regex },
             { contactEmail: regex },
-            { contactPhone: regex },
           ],
         });
       }
@@ -87,21 +87,21 @@ export class ResearchGroupsService {
     return researchGroups;
   }
 
-  async findOne(code: string): Promise<ResearchGroup> {
-    const researchGroup = await this.researchGroupModel.findOne({ code: code });
+  async findOne(_id: string): Promise<ResearchGroup> {
+    const researchGroup = await this.researchGroupModel.findOne({ _id: _id });
     if (!researchGroup) {
       throw new NotFoundException('ResearchGroup not found');
     }
     return researchGroup;
   }
 
-  async update(code: string, updateResearchGroupDto: UpdateResearchGroupDto) {
-    const researchGroup = await this.researchGroupModel.findOne({ code: code });
+  async update(_id: string, updateResearchGroupDto: UpdateResearchGroupDto) {
+    const researchGroup = await this.researchGroupModel.findOne({ _id });
     if (!researchGroup) {
       throw new NotFoundException('ResearchGroup not found');
     }
     const res = await this.researchGroupModel.updateOne(
-      { code: code },
+      { _id: _id },
       {
         $set: {
           code: updateResearchGroupDto.code,
@@ -117,18 +117,18 @@ export class ResearchGroupsService {
     return res;
   }
 
-  async remove(id: string) {
-    const researchGroup = await this.researchGroupModel.findOne({ id: id });
+  async remove(_id: string) {
+    const researchGroup = await this.researchGroupModel.findOne({ _id: _id });
     if (!researchGroup) {
       throw new NotFoundException('ResearchGroup not found');
     }
-    const res = await this.researchGroupModel.deleteOne({ id: id });
+    const res = await this.researchGroupModel.deleteOne({ _id: _id });
     if (!res) {
       throw new NotFoundException('ResearchGroup not found');
     }
     if (!res.acknowledged) {
       throw new Error('Delete operation not acknowledged by the database');
     }
-    return `This action removes a #${id} researchGroup`;
+    return `This action removes a #${_id} researchGroup`;
   }
 }
