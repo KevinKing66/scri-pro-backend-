@@ -242,13 +242,6 @@ export class ProjectsService {
         { $set: updateFields },
       );
 
-      // Verificar si el documento fue modificado
-      // if (res.modifiedCount === 0) {
-      //   throw new BadRequestException(
-      //     'No se realizaron cambios en el proyecto',
-      //   );
-      // }
-
       return {
         message: 'Proyecto actualizado correctamente',
         modifiedCount: res.modifiedCount,
