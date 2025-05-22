@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
+  // Load environment variables from .env file
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
