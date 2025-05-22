@@ -1,7 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
@@ -9,25 +12,33 @@ import { User } from './entities/user.entity';
 export class UsersService {
   constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
 
-  async create(createUserDto: CreateUserDto) {
-    const user = new this.userModel(createUserDto);
-    const existingUser = await this.userModel.findOne({
-      email: createUserDto.email,
-    });
-    // Check if the user already exists
-    if (existingUser) {
-      throw new NotFoundException('User already exists');
-    }
-    const res = await user.save();
-    return res;
-  }
+  async findAll(filter: string = '', page: number = 1, limit: number = 10) {
+    const query = {
+      $or: [
+        { name: new RegExp(filter, 'i') },
+        { lastName: new RegExp(filter, 'i') },
+        { email: new RegExp(filter, 'i') },
+        { code: new RegExp(filter, 'i') },
+      ],
+    };
 
-  async findAll() {
-    const users = await this.userModel.find();
-    if (!users) {
-      throw new NotFoundException('Users not found');
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.userModel.find(query).skip(skip).limit(limit),
+      this.userModel.countDocuments(query),
+    ]);
+
+    if (!data || data.length === 0) {
+      throw new NotFoundException('No se encontraron usuarios');
     }
-    return users;
+
+    return {
+      data,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async findOne(email: string) {
@@ -39,26 +50,41 @@ export class UsersService {
   }
 
   async update(email: string, updateUserDto: UpdateUserDto) {
-    const user = await this.userModel.findOne({ email: email });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    const updateFields = Object.fromEntries(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      Object.entries(updateUserDto).filter(([_, value]) => value !== undefined),
-    );
-    const res = await this.userModel.updateOne(
-      { email },
-      { $set: updateFields },
-    );
-    if (!res) {
-      throw new NotFoundException('User not found');
-    }
-    if (!res.acknowledged) {
-      throw new Error('Update operation not acknowledged by the database');
-    }
+    try {
+      const user = await this.userModel.findOne({ email });
+      if (!user) {
+        throw new NotFoundException('No existe el usuario');
+      }
 
-    return `This action updates a #${email} user`;
+      const updateFields = Object.fromEntries(
+        Object.entries(updateUserDto).filter(
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          ([_, value]) => value !== undefined,
+        ),
+      );
+
+      const res = await this.userModel.updateOne(
+        { email },
+        { $set: updateFields },
+      );
+
+      if (!res || res.matchedCount === 0) {
+        throw new NotFoundException('No se encontró usuario para actualizar');
+      }
+
+      if (!res.acknowledged) {
+        throw new InternalServerErrorException(
+          'Operación de actualización no reconocida por la base de datos',
+        );
+      }
+
+      return `Se actualizar el usuario #${email}`;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error while updating user');
+    }
   }
 
   async remove(email: string) {

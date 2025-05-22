@@ -7,7 +7,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   code?: string | undefined;
   password?: string | undefined;
   phone?: string | undefined;
-  researchGroupId?: number | undefined;
+  researchGroups?: { code: string; name: string }[] | undefined;
   role?: 'STUDENT' | 'TEACHER' | 'ADMIN' | undefined;
   status?: 'ACTIVE' | 'INACTIVE' | undefined;
 }

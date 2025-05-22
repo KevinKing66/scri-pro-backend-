@@ -3,10 +3,16 @@ import {
   Evidence,
   EvidenceSchema,
 } from 'src/evidences/entities/evidence.entity';
+import {
+  SimpleResearchGroups,
+  SimpleResearchGroupSchema,
+} from 'src/research-groups/entities/simple-research-group.entity';
+import { FileInfo, FileSchema } from 'src/shared/entity/file.entity';
 
 export class Project extends Document {
   code: string;
-  imageUrl?: string;
+  image?: FileInfo;
+  owner?: { email: string; name: string };
   name: string;
   type?: string;
   evidences: Evidence[];
@@ -15,12 +21,19 @@ export class Project extends Document {
   updatedAt?: Date;
   status: 'ACTIVE' | 'COMPLETED' | 'PAUSED';
   members: { email: string; name: string }[];
-  researchGroupId?: { email: string; name: string };
+  researchGroups: SimpleResearchGroups[];
 }
 
 export const ProjectSchema = new Schema<Project>({
   code: { type: String, required: false },
-  imageUrl: { type: String, required: false },
+  owner: {
+    type: {
+      email: { type: String, required: true },
+      name: { type: String, required: true },
+    },
+    required: true,
+  },
+  image: { type: FileSchema, required: false },
   name: { type: String, required: true },
   evidences: { type: [EvidenceSchema], required: true },
   description: { type: String, required: true },
@@ -40,7 +53,10 @@ export const ProjectSchema = new Schema<Project>({
     ],
     required: true,
   },
-  researchGroupId: { type: Number, required: false },
+  researchGroups: {
+    type: [SimpleResearchGroupSchema],
+    required: true,
+  },
 });
 
 // Export Models

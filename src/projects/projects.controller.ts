@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -21,25 +22,29 @@ export class ProjectsController {
   }
 
   @Get()
-  findAll() {
-    return this.projectsService.findAll();
+  findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 1,
+    @Query('keyword') keyword?: string,
+  ) {
+    return this.projectsService.findAllByKeyword(+page, +limit, keyword);
   }
 
-  @Get(':code')
-  findOne(@Param('code') code: string) {
-    return this.projectsService.findOne(code);
+  @Get(':_id')
+  findOne(@Param('_id') _id: string) {
+    return this.projectsService.findOne(_id);
   }
 
-  @Patch(':code')
+  @Patch(':_id')
   update(
-    @Param('code') code: string,
+    @Param('_id') _id: string,
     @Body() updateProjectDto: UpdateProjectDto,
   ) {
-    return this.projectsService.update(code, updateProjectDto);
+    return this.projectsService.update(_id, updateProjectDto);
   }
 
-  @Delete(':code')
-  remove(@Param('code') code: string) {
-    return this.projectsService.remove(code);
+  @Delete(':_id')
+  remove(@Param('_id') _id: string) {
+    return this.projectsService.remove(_id);
   }
 }

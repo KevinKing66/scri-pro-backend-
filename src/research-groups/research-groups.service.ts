@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateResearchGroupDto } from './dto/create-research-group.dto';
 import { UpdateResearchGroupDto } from './dto/update-research-group.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -28,6 +32,53 @@ export class ResearchGroupsService {
     return res;
   }
 
+  async findAllPaginated(page = 1, limit = 10, keyword?: string) {
+    try {
+      const skip = (page - 1) * limit;
+
+      // Construcción del filtro de búsqueda
+      const filter: Partial<Record<keyof ResearchGroup, any>> = {};
+
+      if (keyword) {
+        const regex = new RegExp(keyword, 'i');
+        Object.assign(filter, {
+          $or: [
+            { code: regex },
+            { name: regex },
+            { description: regex },
+            { 'admin.name': regex },
+            { 'admin.email': regex },
+            { faculty: regex },
+            { knowledgeArea: regex },
+            { contactEmail: regex },
+          ],
+        });
+      }
+
+      const [data, total] = await Promise.all([
+        this.researchGroupModel
+          .find(filter)
+          .skip(skip)
+          .limit(limit)
+          .sort({ updatedAt: -1, createdAt: -1 })
+          .lean(),
+        this.researchGroupModel.countDocuments(filter),
+      ]);
+
+      return {
+        data,
+        total,
+        page,
+        totalPages: Math.ceil(total / limit),
+      };
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(
+        'Error al obtener los grupos de investigación',
+      );
+    }
+  }
+
   async findAll(): Promise<ResearchGroup[]> {
     const researchGroups = await this.researchGroupModel.find();
     if (!researchGroups) {
@@ -36,21 +87,21 @@ export class ResearchGroupsService {
     return researchGroups;
   }
 
-  async findOne(code: string): Promise<ResearchGroup> {
-    const researchGroup = await this.researchGroupModel.findOne({ code: code });
+  async findOne(_id: string): Promise<ResearchGroup> {
+    const researchGroup = await this.researchGroupModel.findOne({ _id: _id });
     if (!researchGroup) {
       throw new NotFoundException('ResearchGroup not found');
     }
     return researchGroup;
   }
 
-  async update(code: string, updateResearchGroupDto: UpdateResearchGroupDto) {
-    const researchGroup = await this.researchGroupModel.findOne({ code: code });
+  async update(_id: string, updateResearchGroupDto: UpdateResearchGroupDto) {
+    const researchGroup = await this.researchGroupModel.findOne({ _id });
     if (!researchGroup) {
       throw new NotFoundException('ResearchGroup not found');
     }
     const res = await this.researchGroupModel.updateOne(
-      { code: code },
+      { _id: _id },
       {
         $set: {
           code: updateResearchGroupDto.code,
@@ -66,18 +117,18 @@ export class ResearchGroupsService {
     return res;
   }
 
-  async remove(id: string) {
-    const researchGroup = await this.researchGroupModel.findOne({ id: id });
+  async remove(_id: string) {
+    const researchGroup = await this.researchGroupModel.findOne({ _id: _id });
     if (!researchGroup) {
       throw new NotFoundException('ResearchGroup not found');
     }
-    const res = await this.researchGroupModel.deleteOne({ id: id });
+    const res = await this.researchGroupModel.deleteOne({ _id: _id });
     if (!res) {
       throw new NotFoundException('ResearchGroup not found');
     }
     if (!res.acknowledged) {
       throw new Error('Delete operation not acknowledged by the database');
     }
-    return `This action removes a #${id} researchGroup`;
+    return `This action removes a #${_id} researchGroup`;
   }
 }

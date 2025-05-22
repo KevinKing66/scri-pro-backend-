@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   // Load environment variables from .env file
@@ -11,7 +12,8 @@ async function bootstrap() {
     credentials: true,
   });
 
+  app.use(bodyParser.json({ limit: '50mb' }));
+
   await app.listen(process.env.PORT || 3000, '0.0.0.0');
-  console.log(`Aplicación corriendo en el puerto ${process.env.PORT}`);
 }
 bootstrap();

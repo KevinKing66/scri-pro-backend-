@@ -1,5 +1,7 @@
 import {
+  BadRequestException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -21,21 +23,49 @@ export class AuthService {
   ) {}
 
   async create(createUserDto: RegisterDto) {
-    const existingUser = await this.userModel.findOne({
-      $or: [{ email: createUserDto.email }, { code: createUserDto.code }],
-    });
+    try {
+      let existingUser = await this.userModel.findOne({
+        email: createUserDto.email,
+      });
+      if (existingUser) {
+        throw new BadRequestException('Ya existe un usuario con este email');
+      }
 
-    if (existingUser) {
-      throw new NotFoundException('User already exists');
+      existingUser = await this.userModel.findOne({
+        code: createUserDto.code,
+      });
+      if (existingUser) {
+        throw new BadRequestException('Ya existe un usuario con este código');
+      }
+
+      const { password } = createUserDto;
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const user = new this.userModel({
+        ...createUserDto,
+        password: hashedPassword,
+      });
+
+      const res = await user.save();
+
+      if (!res) {
+        throw new InternalServerErrorException('Falló la creación del usuario');
+      }
+
+      return res;
+    } catch (error) {
+      if (
+        error instanceof BadRequestException ||
+        error instanceof InternalServerErrorException
+      ) {
+        throw error;
+      }
+
+      console.log(error);
+      throw new InternalServerErrorException(
+        'Hubo un error intentando crear el usuario',
+      );
     }
-    const { password } = createUserDto;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new this.userModel({
-      ...createUserDto,
-      password: hashedPassword,
-    });
-    const res = await user.save();
-    return res;
   }
 
   async ChangePassword(data: ChangePassword) {
