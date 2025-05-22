@@ -1,4 +1,5 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, HttpStatus, Res } from '@nestjs/common';
+import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -15,8 +16,11 @@ export class AuthController {
   }
 
   @Post('login')
-  login(@Body() loginDto: LoginDto) {
-    return this.authService.validateUser(loginDto);
+  async login(@Body() loginDto: LoginDto, @Res() res: Response) {
+    const data = await this.authService.login(loginDto);
+    const token = data?.access_token;
+    res.setHeader('Authorization', `Bearer ${token}`);
+    return res.status(HttpStatus.OK).json(data);
   }
 
   @Post('change-password')

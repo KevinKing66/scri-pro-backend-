@@ -25,7 +25,6 @@ export class AuthService {
       $or: [{ email: createUserDto.email }, { code: createUserDto.code }],
     });
 
-    console.log(existingUser);
     if (existingUser) {
       throw new NotFoundException('User already exists');
     }
@@ -95,6 +94,7 @@ export class AuthService {
     const res = { ...user.toObject(), password: undefined }; // Exclude password from the returned object
     return res;
   }
+
   async login(
     loginDto: LoginDto,
   ): Promise<{ access_token: string; user: any }> {
