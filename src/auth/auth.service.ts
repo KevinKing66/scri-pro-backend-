@@ -22,8 +22,10 @@ export class AuthService {
 
   async create(createUserDto: RegisterDto) {
     const existingUser = await this.userModel.findOne({
-      email: createUserDto.email,
+      $or: [{ email: createUserDto.email }, { code: createUserDto.code }],
     });
+
+    console.log(existingUser);
     if (existingUser) {
       throw new NotFoundException('User already exists');
     }
