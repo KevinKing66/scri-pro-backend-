@@ -118,8 +118,10 @@ export class ProjectsService {
           { description: regex },
           { 'members.name': regex },
           { 'members.email': regex },
-          { 'researchGroup.name': regex },
-          { 'researchGroup.code': regex },
+          { 'owner.name': regex },
+          { 'owner.email': regex },
+          { 'researchGroups.name': regex },
+          { 'researchGroups.code': regex },
         ];
       }
 
