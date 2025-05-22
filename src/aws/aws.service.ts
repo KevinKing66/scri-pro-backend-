@@ -183,4 +183,25 @@ export class AwsService {
 
     await this.s3.send(command);
   }
+
+  /**
+   * Genera una URL firmada para subir un archivo a S3.
+   *
+   * @param fileName - Nombre del archivo a subir.
+   * @param fileType - Tipo de contenido del archivo (ej. 'image/jpeg').
+   * @returns URL firmada para subir el archivo.
+   */
+  async generatePresignedUrl(
+    fileName: string,
+    fileType: string,
+  ): Promise<string> {
+    const command = new PutObjectCommand({
+      Bucket: process.env.AWS_BUCKET,
+      Key: fileName,
+      ContentType: fileType,
+    });
+
+    const url = await getSignedUrl(this.s3, command, { expiresIn: 300 }); // 5 minutos
+    return url;
+  }
 }
