@@ -6,7 +6,7 @@ import { Model } from 'mongoose';
 import { Project } from './entities/project.entity';
 import { AwsService } from 'src/aws/aws.service';
 import { CreateEvidenceDto } from 'src/evidences/dto/create-evidence.dto';
-import { Evidence } from '../../dist/evidences/entities/evidence.entity';
+import { Evidence } from '../evidences/entities/evidence.entity';
 
 @Injectable()
 export class ProjectsService {
