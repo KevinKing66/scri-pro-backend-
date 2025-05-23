@@ -2,12 +2,14 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as bodyParser from 'body-parser';
 
+const cors = process.env.CORS_ORIGIN?.split(',').map((origin) => origin.trim());
+
 async function bootstrap() {
   // Load environment variables from .env file
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: process.env.CORS_ORIGIN?.split(', ') || ['https://scri-pro.vercel.app'],
+    origin: cors || ['http://localhost:4200'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
