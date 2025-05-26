@@ -223,7 +223,10 @@ export class ProjectsService {
         ),
       );
 
-      if (updateProjectDto.image?.content !== '' && project.image?.key) {
+      const noContainKey =
+        !updateProjectDto.image?.key ||
+        updateProjectDto.image?.key.trim() === '';
+      if (noContainKey && project.image?.key) {
         await this.awsService.deleteFile(project.image?.key);
       }
 
@@ -231,8 +234,7 @@ export class ProjectsService {
       if (
         updateProjectDto.image?.content &&
         updateProjectDto.image?.content.trim() !== '' &&
-        (!updateProjectDto.image?.key ||
-          updateProjectDto.image?.key.trim() === '')
+        noContainKey
       ) {
         thumbnail = await this.awsService.uploadBase64Image(
           updateProjectDto.image.content,
