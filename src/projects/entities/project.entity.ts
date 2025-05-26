@@ -35,6 +35,7 @@ export const ProjectSchema = new Schema<Project>({
   },
   image: { type: FileSchema, required: false },
   name: { type: String, required: true },
+  type: { type: String, required: false },
   evidences: { type: [EvidenceSchema], required: true },
   description: { type: String, required: true },
   creationDateTime: { type: Date, required: true },
