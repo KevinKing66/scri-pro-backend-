@@ -228,7 +228,12 @@ export class ProjectsService {
       }
 
       let thumbnail: FileInfo | null = null;
-      if (updateProjectDto.image?.content) {
+      if (
+        updateProjectDto.image?.content &&
+        updateProjectDto.image?.content.trim() !== '' &&
+        updateProjectDto.image?.key &&
+        updateProjectDto.image?.key.trim() === ''
+      ) {
         thumbnail = await this.awsService.uploadBase64Image(
           updateProjectDto.image.content,
           'thumbnail',
