@@ -7,6 +7,7 @@ import { MemberDTO } from 'src/shared/dto/member.dto';
 export class UpdateProjectDto extends PartialType(CreateProjectDto) {
   code?: string | undefined;
   name?: string | undefined;
+  type?: string | undefined;
   image?: CreateFileInfoDTO | undefined;
   evidences?: CreateEvidenceDto[] | undefined;
   members?: MemberDTO[] | undefined;
