@@ -215,14 +215,6 @@ export class ProjectsService {
       }
       updateProjectDto.evidences = undefined;
 
-      // Filtrar campos undefined del DTO
-      let updateFields = Object.fromEntries(
-        Object.entries(updateProjectDto).filter(
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          ([_, value]) => value !== undefined,
-        ),
-      );
-
       const noContainKey =
         !updateProjectDto.image?.key ||
         updateProjectDto.image?.key.trim() === '';
@@ -241,10 +233,21 @@ export class ProjectsService {
           'thumbnail',
           '',
         );
-        updateFields.image = thumbnail;
       }
+      updateProjectDto.image = undefined;
+
+      // Filtrar campos undefined del DTO
+      let updateFields = Object.fromEntries(
+        Object.entries(updateProjectDto).filter(
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          ([_, value]) => value !== undefined,
+        ),
+      );
 
       updateFields.updatedAt = new Date();
+      if (thumbnail != null) {
+        updateFields.image = thumbnail;
+      }
 
       const res = await this.projectModel.updateOne(
         { _id: _id },
