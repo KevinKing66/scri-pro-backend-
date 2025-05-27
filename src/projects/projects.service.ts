@@ -218,7 +218,9 @@ export class ProjectsService {
       const noContainKey =
         !updateProjectDto.image?.key ||
         updateProjectDto.image?.key.trim() === '';
-      if (noContainKey && project.image?.key) {
+
+      const newContent = updateProjectDto.image?.content != null;
+      if (newContent && project.image?.key) {
         await this.awsService.deleteFile(project.image?.key);
       }
 
