@@ -103,15 +103,21 @@ export class ProjectsService {
     );
   }
 
-  async findAllByKeyword(page = 1, limit = 10, keyword?: string) {
+  async findAllByKeyword(
+    page = 1,
+    limit = 10,
+    keyword?: string,
+    startDate?: string,
+    endDate?: string,
+    sortBy: 'createdAt' | 'updatedAt' = 'updatedAt',
+    order: 'asc' | 'desc' = 'desc',
+  ) {
     try {
       const skip = (page - 1) * limit;
-
-      // Filtro de búsqueda si hay palabra clave
       const filter: FilterQuery<Project> = {};
 
       if (keyword) {
-        const regex = new RegExp(keyword, 'i'); // i = ignore case
+        const regex = new RegExp(keyword, 'i');
         filter.$or = [
           { name: regex },
           { code: regex },
@@ -125,12 +131,23 @@ export class ProjectsService {
         ];
       }
 
+      // Rango de fechas (creación)
+      if (startDate || endDate) {
+        filter.createdAt = {};
+        if (startDate) filter.createdAt.$gte = new Date(startDate);
+        if (endDate) filter.createdAt.$lte = new Date(endDate);
+      }
+
+      // Orden dinámico
+      const sortOptions: Record<string, 1 | -1> = {};
+      sortOptions[sortBy] = order === 'asc' ? 1 : -1;
+
       const [data, total] = await Promise.all([
         this.projectModel
           .find(filter)
           .skip(skip)
           .limit(limit)
-          .sort({ updatedAt: -1, createdAt: -1 })
+          .sort(sortOptions)
           .lean(),
         this.projectModel.countDocuments(filter),
       ]);

@@ -24,10 +24,22 @@ export class ProjectsController {
   @Get()
   findAll(
     @Query('page') page = 1,
-    @Query('limit') limit = 1,
+    @Query('limit') limit = 10,
     @Query('keyword') keyword?: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+    @Query('sortBy') sortBy: 'createdAt' | 'updatedAt' = 'updatedAt',
+    @Query('order') order: 'asc' | 'desc' = 'desc',
   ) {
-    return this.projectsService.findAllByKeyword(+page, +limit, keyword);
+    return this.projectsService.findAllByKeyword(
+      +page,
+      +limit,
+      keyword,
+      startDate,
+      endDate,
+      sortBy,
+      order,
+    );
   }
 
   @Get(':_id')
