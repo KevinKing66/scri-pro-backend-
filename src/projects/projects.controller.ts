@@ -22,7 +22,7 @@ export class ProjectsController {
   }
 
   @Get()
-  findAll(
+  findAllByKeywordWithPagination(
     @Query('page') page = 1,
     @Query('limit') limit = 10,
     @Query('keyword') keyword?: string,
@@ -34,6 +34,23 @@ export class ProjectsController {
     return this.projectsService.findAllByKeyword(
       +page,
       +limit,
+      keyword,
+      startDate,
+      endDate,
+      sortBy,
+      order,
+    );
+  }
+
+  @Get('non-paginated')
+  findAll(
+    @Query('keyword') keyword?: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+    @Query('sortBy') sortBy: 'createdAt' | 'updatedAt' | 'name' = 'updatedAt',
+    @Query('order') order: 'asc' | 'desc' = 'desc',
+  ) {
+    return this.projectsService.findAllByKeywordWithOutPagination(
       keyword,
       startDate,
       endDate,

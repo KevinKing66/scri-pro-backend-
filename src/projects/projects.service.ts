@@ -171,6 +171,61 @@ export class ProjectsService {
     }
   }
 
+  async findAllByKeywordWithOutPagination(
+    keyword?: string,
+    startDate?: string,
+    endDate?: string,
+    sortBy: 'createdAt' | 'updatedAt' | 'name' = 'updatedAt',
+    order: 'asc' | 'desc' = 'desc',
+  ) {
+    try {
+      const filter: FilterQuery<Project> = {};
+
+      if (keyword) {
+        const regex = new RegExp(keyword, 'i');
+        filter.$or = [
+          { name: regex },
+          { code: regex },
+          { description: regex },
+          { 'members.name': regex },
+          { 'members.email': regex },
+          { 'owner.name': regex },
+          { 'owner.email': regex },
+          { 'researchGroups.name': regex },
+          { 'researchGroups.code': regex },
+        ];
+      }
+
+      // Rango de fechas (creación)
+      if (startDate || endDate) {
+        filter.createdAt = {};
+        if (startDate) filter.createdAt.$gte = new Date(startDate);
+        if (endDate) filter.createdAt.$lte = new Date(endDate);
+      }
+
+      // Orden dinámico
+      const sortOptions: Record<string, 1 | -1> = {};
+      sortOptions[sortBy] = order === 'asc' ? 1 : -1;
+
+      const data = await this.projectModel
+        .find(filter)
+        .sort(sortOptions)
+        .lean();
+
+      for (let project of data) {
+        const key = project.image?.key;
+        if (project.image && key) {
+          project.image.url = await this.getUrlByKey(key);
+        }
+      }
+
+      return data;
+    } catch (error: unknown) {
+      console.error(error);
+      throw new InternalServerErrorException('Error al obtener los proyectos');
+    }
+  }
+
   async findAll() {
     const projects = await this.projectModel.find();
     if (!projects) {
