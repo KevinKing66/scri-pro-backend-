@@ -28,7 +28,7 @@ export class ProjectsController {
     @Query('keyword') keyword?: string,
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
-    @Query('sortBy') sortBy: 'createdAt' | 'updatedAt' = 'updatedAt',
+    @Query('sortBy') sortBy: 'createdAt' | 'updatedAt' | 'name' = 'updatedAt',
     @Query('order') order: 'asc' | 'desc' = 'desc',
   ) {
     return this.projectsService.findAllByKeyword(

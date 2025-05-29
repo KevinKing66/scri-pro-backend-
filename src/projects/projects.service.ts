@@ -109,7 +109,7 @@ export class ProjectsService {
     keyword?: string,
     startDate?: string,
     endDate?: string,
-    sortBy: 'createdAt' | 'updatedAt' = 'updatedAt',
+    sortBy: 'createdAt' | 'updatedAt' | 'name' = 'updatedAt',
     order: 'asc' | 'desc' = 'desc',
   ) {
     try {
